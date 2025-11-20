@@ -1,0 +1,181 @@
+创建时间： 2025-11-20
+
+核心目标： 将本地 Obsidian 中的部分笔记，通过自动化脚本发布为美观的静态网站。
+
+涉及工具： GitHub, Quartz (开源项目), Netlify (托管平台), PowerShell 脚本。
+
+---
+
+## 1. 项目初始化 (一次性工作)
+
+这部分只需做一次，搭建好本地和云端的环境。
+
+### 1.1 获取 Quartz 源码 (Fork)
+
+我们需要在 GitHub 上复制一份 Quartz 的代码到自己的账号下。
+
+1. 访问 Quartz 官方仓库：[https://github.com/jackyzha0/quartz](https://github.com/jackyzha0/quartz)
+    
+2. 点击页面右上角的 **Fork** 按钮。
+    
+3. **Owner** 选择自己的账号，**Repository name** 可以改为自己喜欢的名字（如 `my-digital-garden` 或保持 `quartz` 不变）。
+    
+4. 点击 **Create fork**。
+    
+    - _此时，您的 GitHub 账号下就有了一个属于您的 Quartz 项目。_
+        
+
+### 1.2 拉取到本地 (Clone)
+
+将云端的代码下载到本地电脑，以便存放笔记和运行脚本。
+
+1. 在电脑上找一个存放项目的文件夹（例如 `D:\GitHub`）。
+    
+2. 在文件夹空白处右键 -> **Git Bash Here** (或者使用终端)。
+    
+3. 输入以下命令（将链接换成您**Fork 后**的仓库地址）：
+    
+    Bash
+    
+    ```
+    git clone https://github.com/您的用户名/quartz.git
+    ```
+    
+4. **初始化（可选）：** 进入 `quartz` 文件夹，如果想在本地预览，可以运行 `npm i` 和 `npx quartz create` 初始化配置。但这对于 Netlify 部署不是必须的。
+    
+
+---
+
+## 2. Netlify 部署配置 (关键步骤)
+
+这一步将 GitHub 仓库连接到互联网，并告诉 Netlify 如何把 Markdown 变成网页。
+
+### 2.1 导入项目
+
+1. 登录 [Netlify](https://www.netlify.com/) (推荐直接用 GitHub 登录)。
+    
+2. 点击 **Add new site** -> **Import an existing project**。
+    
+3. 选择 **GitHub**，授权后在列表中选中刚才 Clone 的那个 **Quartz 仓库**。
+    
+
+### 2.2 构建设置 (Build Settings) ⚠️ 重点
+
+在导入界面的 **Build settings** 区域，**必须**严格填写以下内容，否则网站无法显示。
+
+|**配置项**|**填写值**|**原理与解释**|
+|---|---|---|
+|**Build command**|`npx quartz build`|**编译指令**。Netlify 拿到的是 Markdown **源码**，这条命令会启动 Quartz 程序，将源码“编译”成浏览器能读懂的 HTML **网页**。|
+|**Publish directory**|`public`|**输出目录**。`npx quartz build` 运行结束后，会把生成的网页文件全部放在一个即时生成的 `public` 文件夹里。我们需要告诉 Netlify：“请展示这个文件夹里的内容”。|
+
+> **💡 避坑指南：**
+> 
+> - 如果不填构建设置，Netlify 只会把 `.md` 文件搬运上去，浏览器无法渲染，会导致 **404 错误**。
+>     
+> - 源代码里没有 `public` 文件夹是正常的，它是由 Netlify 在云端编译时生成的。
+>     
+
+---
+
+## 3. 核心文件规则
+
+### 3.1 入口文件：`index.md`
+
+- **规则：** `quartz/content` 文件夹的**根目录**下，必须有一个名为 `index.md` 的文件。
+    
+- **作用：** 它是网站的主页。如果没有它，访问域名时会找不到落脚点，报错 Page Not Found。
+    
+
+### 3.2 目录结构隔离
+
+为了安全，我们不在 Quartz 文件夹里直接写笔记，而是采用**物理隔离**策略：
+
+- **`sukiya_vault` (私有库)：** 您原本的笔记库。新建一个 **`公开`** 文件夹，专门存放要发布的内容。
+    
+- **`quartz` (发布库)：** 只作为发布的跳板，通过脚本从私有库同步内容过来。
+    
+
+---
+
+## 4. 自动化发布工作流
+
+日常只需要在 Obsidian 里写笔记，然后运行脚本即可。
+
+### 4.1 准备工作
+
+1. 在 **私有库** 的 `公开` 文件夹内，确保放好了 `index.md` 和需要分享的笔记。
+    
+2. **重要：** 如果有图片，图片也必须放在 `公开` 文件夹内部（建议在 Obsidian 设置中将附件设为“存放在当前文件夹下”）。
+    
+
+### 4.2 一键发布脚本
+
+在本地 **Quartz 文件夹根目录**下，新建文件 `deploy.ps1`，填入以下代码：
+
+PowerShell
+
+```
+<#
+脚本名称：Obsidian 知识库一键发布脚本
+功能：同步“公开”文件夹 -> Quartz -> GitHub -> Netlify
+使用方法：右键本文件 -> 使用 PowerShell 运行
+#>
+
+# ==================== 配置区域 ====================
+# 1. 源路径：Obsidian 私有库中“公开”文件夹的绝对路径 (结尾不加斜杠)
+$SourcePath = "C:\Users\25899\Documents\GitHub\sukiya_vault\公开"
+
+# 2. 目标路径：自动定位到当前脚本下的 content 文件夹
+$QuartzPath = $PSScriptRoot
+$ContentPath = Join-Path $QuartzPath "content"
+# =================================================
+
+# --- 步骤1：安全检查 ---
+if (-not (Test-Path $SourcePath)) {
+    Write-Host "❌ 错误：找不到源文件夹！请检查配置区域的路径。" -ForegroundColor Red
+    Pause
+    exit
+}
+
+# --- 步骤2：镜像同步 (Robocopy) ---
+Write-Host "🚀 [1/3] 正在同步笔记文件..." -ForegroundColor Cyan
+
+# 参数解释：/MIR(镜像模式) /XD(排除文件夹) /XF(排除文件) /MT(多线程)
+robocopy $SourcePath $ContentPath /MIR /XD .obsidian .git .trash .private /XF .gitignore .gitattributes /MT:8 /njh /njs /ndl /nc /ns
+
+if ($LASTEXITCODE -ge 8) {
+    Write-Host "❌ 同步失败！" -ForegroundColor Red
+    Pause
+    exit
+}
+
+# --- 步骤3：Git 提交与推送 ---
+Write-Host "`n📦 [2/3] 正在提交到 GitHub..." -ForegroundColor Cyan
+Set-Location $QuartzPath
+git add .
+$Time = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+git commit -m "Deploy: Content update at $Time"
+
+Write-Host "☁️ [3/3] 正在推送到云端..." -ForegroundColor Cyan
+git push
+
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "`n✅ 发布成功！Netlify 正在构建，请稍等 1 分钟访问网站。" -ForegroundColor Green
+} else {
+    Write-Host "`n⚠️ 推送失败，请检查网络或 Git 配置。" -ForegroundColor Yellow
+}
+
+Start-Sleep -Seconds 3
+```
+
+---
+
+## 5. 极简操作总结
+
+1. **写：** 在 Obsidian 里写笔记。
+    
+2. **拖：** 把想发布的笔记（及图片）拖进 **`公开`** 文件夹。
+    
+3. **点：** 双击运行 `deploy.ps1`。
+    
+4. **看：** 喝口水，打开网站查看更新。
