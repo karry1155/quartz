@@ -119,6 +119,17 @@ Obsidian 与 AI Agent 结合是其最具未来感的优势。我推荐使用 AI 
 | --------------- | ----------------------------------------------------------------------------------------------------- |
 | **1. 必备工具**     | 安装 **Node.js** (包含 npm) 和 **Git 命令行工具**（Obsidian Git 插件依赖）。                                           |
 | **2. npm 权限处理** | 如果遇到权限错误 (`ExecutionPolicy` 为 `Restricted`)，先执行：`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
-| **3. 安装 CLI**   | 打开终端，全局安装 Gemini CLI：<br>`npm install -g @google/gemini-cli`                                          |
+| **3. 安装 CLI**   | 打开终端，全局安装 Gemini CLI：<br><br>  <br><br>`npm install -g @google/gemini-cli`                            |
 | **4. 启动与登录**    | 在 Obsidian 笔记目录下启动 CLI，并使用 Google 账号登录（需要海外网络环境）。                                                     |
 
+---
+
+### ⚡ 优势四：极致的速度与心流体验
+
+（_原内容作为独立优势保留，也可与数据安全合并为“本地化优势”_）
+
+- **告别卡顿：** 许多云笔记的延迟会破坏专注工作的**心流**。
+    
+- **极致速度：** Obsidian 丝滑稳定，再也感觉不到任何卡顿。
+
+![[Pasted image 20251120150044.png]]
