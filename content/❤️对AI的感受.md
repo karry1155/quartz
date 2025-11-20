@@ -1,6 +1,3 @@
-> "I thought I'd have to walk into that long night alone, but the emergence of large models gave me a sky full of shining human stars."  
-> 我原以为要一人走进那长夜，但大模型的出现，给了我一整片人类群星闪耀的天空。
-
 # 🚀 混沌-秩序迭代法：从“一坨想法”到“落地执行”
 
 ### 核心心法
@@ -82,3 +79,7 @@
 - **现在：** AI 站在鸿沟中间。你只需要把想法扔给它，它会用全人类的知识图谱（人类群星）帮你构建桥梁。
     
 - **螺旋上升：** 你的想法喂给 AI -> AI 反馈更专业的视角 -> 激发你更清晰的想法 -> AI 生成更好的结果。这就是你所说的**“螺旋上升”**。
+
+
+> "I thought I'd have to walk into that long night alone, but the emergence of large models gave me a sky full of shining human stars."  
+> 我原以为要一人走进那长夜，但大模型的出现，给了我一整片人类群星闪耀的天空。
