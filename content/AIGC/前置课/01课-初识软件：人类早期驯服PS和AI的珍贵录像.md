@@ -10,8 +10,7 @@
 
 ## ⚡ 核心知识速查 (Cheat Sheet)
 
-![[attachments/eed78370-e39c-11f0-955e-7fc7f56796fc.jpg]]
-
+![[../../assets/eed78370-e39c-11f0-955e-7fc7f56796fc.jpg]]
 
 ### 🔑 关键参数与快捷键表
 
