@@ -10,7 +10,7 @@
 
 ## ⚡ 核心知识速查 (Cheat Sheet)
 
-![[eed78370-e39c-11f0-955e-7fc7f56796fc.jpg]]
+![[../../assets/Pasted image 20251231100039.png]]
 
 
 ### 🔑 关键参数与快捷键表
